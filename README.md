@@ -1,7 +1,7 @@
 # 使用说明
 
-## Android 端配置步骤
-
+## Android （自动任务）端配置步骤
+### ADB级别后台保活，常驻后台运行，但需要Shizuku（重启后需要重新打开，如果不想多次启动可以看下面方案）
 ### 1. 安装必要软件
 - [自动任务 (AutoTask)](https://github.com/xjunz/AutoTask)
 - [Shizuku](https://github.com/RikkaApps/Shizuku)
@@ -22,6 +22,10 @@
 
 ### 4. 验证配置
 确保所有服务正常运行，数据能正确上报
+
+## Android （Macrodroid）端配置步骤
+### 无障碍+自启动保活，一般情况不会被杀后台，使用方便
+### 待上传
 
 ## Win 端配置步骤
 暂时可以用[main.py](Win_py/main.py)，不完善没有自启动
