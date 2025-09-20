@@ -29,6 +29,7 @@
 
 ## Win 端配置步骤
 暂时可以用[main.py](Win_py/main.py)，不完善没有自启动
+如果您也在使用这个工具接入Hass，只需要打开前台软件监听即可[PCTools](https://github.com/1812z/PCTools)
 
 ## Linux端
 下次一定
