@@ -35,11 +35,11 @@ class WindowHook:
             payload = {
                 "secret": SECRET_KEY,
                 "device": DEVICE_ID,
-                "app_name": "System",
-                "running": True
+                "app_name": "设备待机",
+                "running": False
             }
             response = requests.post(API_URL, json=payload)
-            print("已上报关机状态")
+            print(f"关机状态上报成功: {response.status_code}")
         except Exception as e:
             print(f"关机上报失败: {str(e)}")
 
