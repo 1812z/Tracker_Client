@@ -24,8 +24,12 @@
 确保所有服务正常运行，数据能正确上报
 
 ## Android （Macrodroid）端配置步骤
-### 无障碍+自启动保活，一般情况不会被杀后台，使用方便
-### 待上传
+### 无障碍+自启动保活，一般情况不会被杀后台，使用更方便
+1. 导入配置文件：
+    - [设备信息上报.category](Android_Macrodroid/%E8%AE%BE%E5%A4%87%E4%BF%A1%E6%81%AF%E4%B8%8A%E6%8A%A5.category)[应用上报.xtsk]([设备信息上报.category](Android_Macrodroid/%E8%AE%BE%E5%A4%87%E4%BF%A1%E6%81%AF%E4%B8%8A%E6%8A%A5.category))
+
+2. 转到 主页/变量/新建，新建变量SECRET和DEVICE_ID，类型为字符串，分别是密钥和设备名
+3. 激活宏，请给予相关权限（无障碍，读取应用列表等）
 
 ## Win 端配置步骤
 暂时可以用[main.py](Win_py/main.py)，不完善没有自启动
