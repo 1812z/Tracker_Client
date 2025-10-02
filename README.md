@@ -10,8 +10,8 @@
 已知问题： 充电状态因引用限制无法及时更新
 
 ### 2. 部署脚本文件
-1. 下载 [app.sh](Android_%E8%87%AA%E5%8A%A8%E4%BB%BB%E5%8A%A1/app.sh)
-2. 放置到设备路径：`/storage/emulated/0/TimeTracker/app.sh`
+1. 下载 [app.sh](Android_%E8%87%AA%E5%8A%A8%E4%BB%BB%E5%8A%A1/app.sh) [battery.sh](Android_%E8%87%AA%E5%8A%A8%E4%BB%BB%E5%8A%A1/battery.sh)
+2. sh文件放置到设备目录：`/storage/emulated/0/TimeTracker/`
 3. 编辑脚本文件，修改以下常量配置：
    - `URL` - API地址
    - `SECRET` - 认证密钥
@@ -20,6 +20,8 @@
 1. 导入任务配置文件：
    - [应用上报.xtsk](Android_%E8%87%AA%E5%8A%A8%E4%BB%BB%E5%8A%A1/%E5%BA%94%E7%94%A8%E4%B8%8A%E6%8A%A5.xtsk)
    - [息屏.xtsk](Android_%E8%87%AA%E5%8A%A8%E4%BB%BB%E5%8A%A1/%E6%81%AF%E5%B1%8F.xtsk)
+   - [电量反馈.xtsk](Android_%E8%87%AA%E5%8A%A8%E4%BB%BB%E5%8A%A1/%E7%94%B5%E9%87%8F%E5%8F%8D%E9%A6%88.xtsk)
+   - [设备充电.xtsk](Android_%E8%87%AA%E5%8A%A8%E4%BB%BB%E5%8A%A1/%E8%AE%BE%E5%A4%87%E5%85%85%E7%94%B5.xtsk)
 2. 激活自动任务
 
 ### 4. 验证配置
