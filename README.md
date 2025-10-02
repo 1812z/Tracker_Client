@@ -7,6 +7,8 @@
 - [Shizuku](https://github.com/RikkaApps/Shizuku)
 - 任意文件管理器
 
+已知问题： 充电状态因引用限制无法及时更新
+
 ### 2. 部署脚本文件
 1. 下载 [app.sh](Android_%E8%87%AA%E5%8A%A8%E4%BB%BB%E5%8A%A1/app.sh)
 2. 放置到设备路径：`/storage/emulated/0/TimeTracker/app.sh`
