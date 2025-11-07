@@ -36,8 +36,8 @@
 3. 激活宏，请给予相关权限（无障碍，读取应用列表等）
 
 ## Win 端配置步骤
-暂时可以用[main.py](Win_py/main.py)，不完善没有自启动
-如果您也在使用这个工具接入Hass，只需要打开前台软件监听即可[PCTools](https://github.com/1812z/PCTools)
+暂时可以用[main.py](Win_py/main.py)，不完善没有自启动  
+如果您也在使用这个工具[PCTools](https://github.com/1812z/PCTools)接入Hass，只需要打开前台软件监听即可  
 
 ## Linux端
 下次一定
