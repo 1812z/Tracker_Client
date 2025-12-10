@@ -33,7 +33,7 @@
     - [设备信息上报.category](Android_Macrodroid/%E8%AE%BE%E5%A4%87%E4%BF%A1%E6%81%AF%E4%B8%8A%E6%8A%A5.category)[应用上报.xtsk]([设备信息上报.category](Android_Macrodroid/%E8%AE%BE%E5%A4%87%E4%BF%A1%E6%81%AF%E4%B8%8A%E6%8A%A5.category))
 
 2. 转到 主页/变量/新建，新建变量SECRET和DEVICE_ID以及API，类型为字符串，分别是密钥，设备名和API地址(示例 https://example.top/api)  
-3. 激活宏，请给予相关权限（无障碍，读取应用列表等）
+3. 激活宏，请给予相关权限（无障碍，读取应用列表，自启动，省电无限制等）
 
 ## Win 端配置步骤
 暂时可以用[main.py](Win_py/main.py)，不完善没有自启动  
