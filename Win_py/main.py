@@ -177,11 +177,11 @@ def report_app_change(current_app):
 def get_foreground_app():
     """使用win32api获取前台应用窗口"""
     global system_suspended, screen_off
-    
+
     # 如果系统处于休眠状态，直接返回待机状态
     if system_suspended:
         return "设备待机"
-    
+
     # 如果屏幕关闭，返回屏幕关闭
     if screen_off:
         return "屏幕关闭"
@@ -191,32 +191,57 @@ def get_foreground_app():
         window = win32gui.GetForegroundWindow()
         if not window:
             return "桌面"
-        
+
         # 获取窗口标题
         window_title = win32gui.GetWindowText(window)
         # 获取进程ID
         _, pid = win32process.GetWindowThreadProcessId(window)
-        
+
         if not pid:
             return "桌面"
-            
-        # 打开进程获取exe名称
-        handle = win32api.OpenProcess(win32con.PROCESS_QUERY_INFORMATION | win32con.PROCESS_VM_READ, False, pid)
-        if not handle:
-            return "系统进程"
-            
-        exe_name = win32process.GetModuleFileNameEx(handle, 0)
-        win32api.CloseHandle(handle)  # 关闭句柄释放资源
 
-        # 提取exe文件名并获取映射名称
-        exe_filename = exe_name.split('\\')[-1]
-        mapped_name = get_mapped_app_name(exe_filename)
+        exe_filename = None
 
-        return mapped_name
+        try:
+            # 尝试打开进程获取exe名称
+            handle = win32api.OpenProcess(
+                win32con.PROCESS_QUERY_INFORMATION | win32con.PROCESS_VM_READ,
+                False,
+                pid
+            )
+            if handle:
+                try:
+                    exe_name = win32process.GetModuleFileNameEx(handle, 0)
+                    exe_filename = exe_name.split('\\')[-1]
+                finally:
+                    win32api.CloseHandle(handle)
+        except Exception as e:
+            # 权限不足时的处理，不影响后续流程
+            print(f"获取进程信息失败 (PID: {pid}): {str(e)}")
+
+        # 如果成功获取到exe文件名，使用映射名称
+        if exe_filename:
+            return get_mapped_app_name(exe_filename)
+
+        # 权限不足时，尝试使用窗口标题作为备用
+        if window_title:
+            # 对于已知的系统程序，返回友好名称
+            title_lower = window_title.lower()
+            if "任务管理器" in window_title or "task manager" in title_lower:
+                return "任务管理器"
+            elif "设置" in window_title or "settings" in title_lower:
+                return "系统设置"
+            # 返回窗口标题
+            return window_title
+
+        return "系统进程"
+
     except Exception as e:
-        # 如果出现特定错误，可能是系统休眠导致的
         error_code = win32api.GetLastError()
-        if error_code in (5, 87, 1008):  # 访问拒绝、参数错误、无效句柄
+        # 只有在特定的休眠相关错误时才判断为休眠
+        # 错误码 1008 (ERROR_NO_TOKEN) 通常与休眠相关
+        # 但错误码 5 (ACCESS_DENIED) 通常只是权限不足
+        if error_code == 1008:
             system_suspended = True
             report_system_status("设备待机", False)
             return "设备待机"
