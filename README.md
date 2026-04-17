@@ -34,9 +34,10 @@
 2. 转到 主页/变量/新建，新建变量SECRET和DEVICE_ID以及API，类型为字符串，分别是密钥，设备名和API地址(示例 https://example.top/api)  
 3. 激活宏，请给予相关权限（无障碍，读取应用列表，自启动，省电无限制等）
 
-## Win 端配置步骤
-暂时可以用[main.py](Win_py/main.py)，不完善没有自启动  
-如果您也在使用这个工具[PCTools](https://github.com/1812z/PCTools)接入Hass，只需要打开前台软件监听即可  
+## Windows端
+1.[CSSQY的第三方客户端](https://github.com/CSSQY/RunTime_Tracker_Client_Windows)  
+2.[main.py](Win_py/main.py)，不完善没有自启动  
+3.如果您也在使用这个工具[PCTools](https://github.com/1812z/PCTools)接入Hass，只需要打开前台软件监听即可  
 
 ## Linux端
 下次一定
