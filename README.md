@@ -40,4 +40,4 @@
 3.如果您也在使用这个工具[PCTools](https://github.com/1812z/PCTools)接入Hass，只需要打开前台软件监听即可  
 
 ## Linux端
-下次一定
+[tracker.sh](Linux_sh/tracker.sh),配置完可直接启动，可自行配置systemd自启动
