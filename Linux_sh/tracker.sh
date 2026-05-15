@@ -37,38 +37,53 @@ get_app() {
     # 检查是否为 Wayland 会话
     if [ "$XDG_SESSION_TYPE" = "wayland" ] || [ -n "$WAYLAND_DISPLAY" ]; then
         local desktop=$(echo "$XDG_CURRENT_DESKTOP" | tr '[:upper:]' '[:lower:]')
+        local handled=false
         
         if [[ "$desktop" == *"hyprland"* ]] && command -v hyprctl >/dev/null 2>&1; then
             # Hyprland
             raw_app=$(hyprctl activewindow | grep "class:" | awk '{print $2}')
+            handled=true
         elif [[ "$desktop" == *"sway"* ]] && command -v swaymsg >/dev/null 2>&1; then
             # Sway
             raw_app=$(swaymsg -t get_tree 2>/dev/null | grep -Po '"focused": true.*?,"app_id": "[^"]*"' | grep -Po '(?<="app_id": ")[^"]*')
+            handled=true
         elif [[ "$desktop" == *"niri"* ]] || command -v niri >/dev/null 2>&1; then
             # Niri
             raw_app=$(niri msg --json focused-window 2>/dev/null | sed -n 's/.*"app_id"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p')
+            handled=true
         elif [[ "$desktop" == *"kde"* ]] && command -v qdbus >/dev/null 2>&1; then
             # KDE Plasma Wayland (存在一定局限性，最新版本 KWin 安全策略限制)
             raw_app=$(qdbus org.kde.KWin /KWin org.kde.KWin.activeWindow 2>/dev/null)
+            handled=true
         elif [[ "$desktop" == *"gnome"* ]] && command -v gdbus >/dev/null 2>&1; then
             # GNOME Wayland (受限：仅在允许 unsafe-mode 的 dbus Eval，或安装了暴露 API 的扩展时工作)
             raw_app=$(gdbus call -e -d org.gnome.Shell -o /org/gnome/Shell -m org.gnome.Shell.Eval "global.display.focus_window ? global.display.focus_window.get_wm_class() : ''" 2>/dev/null | cut -d'"' -f2)
+            handled=true
         fi
         
-        # wlroots 通用 Fallback (需安装 lswt 工具)
-        if [ -z "$raw_app" ] && command -v lswt >/dev/null 2>&1; then
-            raw_app=$(lswt -f json 2>/dev/null | grep -Po '"focused": true.*?,"app-id": "[^"]*"' | grep -Po '(?<="app-id": ")[^"]*')
-        fi
-        
-        # XWayland Fallback (兼容运行在 XWayland 中的传统应用)
-        if [ -z "$raw_app" ] && command -v xdotool >/dev/null 2>&1; then
-            raw_app=$(xprop -id $(xdotool getactivewindow 2>/dev/null) WM_CLASS 2>/dev/null | cut -d'"' -f2)
+        # 如果未被原生支持的桌面环境捕获，才尝试通用 Fallback
+        if [ "$handled" = false ]; then
+            # wlroots 通用 Fallback (需安装 lswt 工具)
+            if [ -z "$raw_app" ] && command -v lswt >/dev/null 2>&1; then
+                raw_app=$(lswt -f json 2>/dev/null | grep -Po '"focused": true.*?,"app-id": "[^"]*"' | grep -Po '(?<="app-id": ")[^"]*')
+            fi
+            
+            # XWayland Fallback (兼容运行在 XWayland 中的传统应用)
+            if [ -z "$raw_app" ] && command -v xdotool >/dev/null 2>&1; then
+                raw_app=$(xprop -id $(xdotool getactivewindow 2>/dev/null) WM_CLASS 2>/dev/null | cut -d'"' -f2)
+            fi
         fi
     else
         # X11 环境
         if command -v xdotool >/dev/null 2>&1; then
             raw_app=$(xprop -id $(xdotool getactivewindow 2>/dev/null) WM_CLASS 2>/dev/null | cut -d'"' -f2)
         fi
+    fi
+
+    # 处理空窗口或异常返回值（比如在桌面未打开任何应用时）
+    # Hyprland 会返回 "Invalid"，部分工具可能返回 "null"、"nil" 或干脆为空
+    if [ -z "$raw_app" ] || [ "$raw_app" = "null" ] || [ "$raw_app" = "Invalid" ] || [ "$raw_app" = "nil" ]; then
+        raw_app="桌面"
     fi
 
     local apps_txt="$(dirname "$0")/apps.txt"
