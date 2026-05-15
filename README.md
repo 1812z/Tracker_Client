@@ -40,4 +40,23 @@
 3.如果您也在使用这个工具[PCTools](https://github.com/1812z/PCTools)接入Hass，只需要打开前台软件监听即可  
 
 ## Linux端
-下次一定
+使用脚本[tracker.sh](Linux_sh/tracker.sh) 
+### X11依赖要求
+```bash
+# Debian/Ubuntu
+sudo apt install xdotool x11-utils
+
+# Arch
+sudo pacman -S xdotool xorg-xprop
+```
+### Wayland
+```
+由于 Wayland 环境出于安全考虑，权限受限，仅实验性支持，暂时支持以下桌面环境：
+Niri
+Hyprland
+Sway
+KDE Plasma Wayland(存在一定局限性，最新版本 KWin 安全策略限制)
+GNOME Wayland (受限：仅在允许 unsafe-mode 的 dbus Eval，或安装了暴露 API 的扩展时工作)
+```
+
+装完依赖且配置完可直接启动，可自行配置systemd自启动
