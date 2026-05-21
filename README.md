@@ -7,6 +7,28 @@
 - [Shizuku](https://github.com/RikkaApps/Shizuku)
 - 任意文件管理器
 
+### 2. 部署脚本文件
+1. 下载 [tracker.sh](Android_%E8%87%AA%E5%8A%A8%E4%BB%BB%E5%8A%A1_%E6%96%B0/tracker.sh)
+2. sh文件放置到设备目录：`/storage/emulated/0/TimeTracker/`
+3. 编辑脚本文件，修改以下常量配置：
+   - `URL` - API地址
+   - `SECRET` - 认证密钥
+
+### 3. 配置自动任务
+1. 导入任务配置文件：
+   - [RunTime Tracker.xtsk](Android_%E8%87%AA%E5%8A%A8%E4%BB%BB%E5%8A%A1_%E6%96%B0/RunTime%20Tracker.xtsk)
+2. 激活自动任务
+
+### 4. 验证配置
+确保所有服务正常运行，数据能正确上报
+
+## Android （自动任务）端配置步骤 - 旧
+### ADB级别后台保活，常驻后台运行，但需要Shizuku（重启后需要重新打开，如果不想多次启动可以看下面方案）
+### 1. 安装必要软件
+- [自动任务 (AutoTask)](https://github.com/xjunz/AutoTask)
+- [Shizuku](https://github.com/RikkaApps/Shizuku)
+- 任意文件管理器
+
 已知问题： 充电状态因引用限制无法及时更新
 
 ### 2. 部署脚本文件
