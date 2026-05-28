@@ -32,6 +32,14 @@ get_charging() {
 }
 
 get_app() {
+    # 动态获取显示器环境变量（解决服务早于桌面启动的问题）
+    if [ -z "$DISPLAY" ]; then
+        export DISPLAY=$(systemctl --user show-environment 2>/dev/null | grep '^DISPLAY=' | cut -d= -f2-)
+    fi
+    if [ -z "$XAUTHORITY" ]; then
+        export XAUTHORITY=$(systemctl --user show-environment 2>/dev/null | grep '^XAUTHORITY=' | cut -d= -f2-)
+    fi
+    
     local raw_app=""
     
     # 检查是否为 Wayland 会话
@@ -70,13 +78,13 @@ get_app() {
             
             # XWayland Fallback (兼容运行在 XWayland 中的传统应用)
             if [ -z "$raw_app" ] && command -v xdotool >/dev/null 2>&1; then
-                raw_app=$(xprop -id $(xdotool getactivewindow 2>/dev/null) WM_CLASS 2>/dev/null | cut -d'"' -f2)
+                raw_app=$(xdotool getactivewindow 2>/dev/null | xargs -I{} xprop -id {} WM_CLASS 2>/dev/null | cut -d'"' -f2)
             fi
         fi
     else
         # X11 环境
         if command -v xdotool >/dev/null 2>&1; then
-            raw_app=$(xprop -id $(xdotool getactivewindow 2>/dev/null) WM_CLASS 2>/dev/null | cut -d'"' -f2)
+            raw_app=$(xdotool getactivewindow 2>/dev/null | xargs -I{} xprop -id {} WM_CLASS 2>/dev/null | cut -d'"' -f2)
         fi
     fi
 
