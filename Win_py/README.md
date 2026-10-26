@@ -142,7 +142,7 @@ python build.py
 
 ## 致谢
 
-本项目的核心数据上报逻辑参考并使用了 [Tracker_Client](https://github.com/1812z/Tracker_Client) 的部分代码，在此对原作者表示感谢。
+本项目的上报核心逻辑参考并受益于 [1812z](https://github.com/1812z) 的 [Tracker_Client](https://github.com/1812z/Tracker_Client) 项目。感谢其开源工作为本项目奠定的基础。原项目链接：[https://github.com/1812z/Tracker_Client](https://github.com/1812z/Tracker_Client)
 
 感谢 [PyQt-Fluent-Widgets](https://github.com/zhiyiYo/PyQt-Fluent-Widgets) 提供的 UI 框架。
 
