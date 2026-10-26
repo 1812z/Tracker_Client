@@ -1,6 +1,6 @@
 """关于页。"""
 
-from PyQt5.QtWidgets import QVBoxLayout, QWidget
+from PyQt5.QtWidgets import QFrame, QScrollArea, QVBoxLayout, QWidget
 from qfluentwidgets import (
     CardWidget,
     HyperlinkButton,
@@ -16,7 +16,18 @@ class AboutPage(QWidget):
         super().__init__(parent)
         self.setObjectName("aboutPage")
 
-        layout = QVBoxLayout(self)
+        outer = QVBoxLayout(self)
+        outer.setContentsMargins(0, 0, 0, 0)
+        scroll = QScrollArea(self)
+        scroll.setWidgetResizable(True)
+        scroll.setFrameShape(QFrame.NoFrame)
+        scroll.setStyleSheet("background: transparent;")
+        outer.addWidget(scroll)
+
+        container = QWidget()
+        scroll.setWidget(container)
+
+        layout = QVBoxLayout(container)
         layout.setContentsMargins(40, 40, 40, 40)
         layout.addWidget(TitleLabel("关于"))
         layout.addSpacing(10)
@@ -64,6 +75,27 @@ class AboutPage(QWidget):
             )
         )
         layout.addWidget(project_card)
+        layout.addSpacing(16)
+
+        thanks_card = CardWidget(self)
+        thanks_layout = QVBoxLayout(thanks_card)
+        thanks_layout.addWidget(TitleLabel("致谢"))
+        thanks_text = body_label(
+            "本项目的上报核心逻辑参考并受益于 1812z 的 Tracker_Client 项目。"
+            "感谢其开源工作为本项目奠定的基础。"
+        )
+        thanks_text.setWordWrap(True)
+        thanks_layout.addWidget(thanks_text)
+        thanks_layout.addWidget(
+            HyperlinkButton(
+                "https://github.com/1812z/Tracker_Client",
+                "原项目链接：github.com/1812z/Tracker_Client",
+            )
+        )
+        ui_thanks = body_label("感谢 PyQt-Fluent-Widgets 提供的 UI 框架。")
+        ui_thanks.setWordWrap(True)
+        thanks_layout.addWidget(ui_thanks)
+        layout.addWidget(thanks_card)
         layout.addSpacing(16)
 
         license_card = CardWidget(self)
