@@ -1,0 +1,11 @@
+{
+  "api_url": "https://your-server.example/api",
+  "secret_key": "",
+  "device_id": "",
+  "report_enabled": true,
+  "monitor_interval": 1,
+  "auto_start": false,
+  "theme": 0,
+  "log_retention_days": 30,
+  "log_retention_count": 30
+}
