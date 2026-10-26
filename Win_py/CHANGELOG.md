@@ -2,6 +2,26 @@
 
 本项目的重要更改记录在此文件中。格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)，版本号遵循语义化版本。
 
+## [1.1.10] - 2026-10-26
+
+### 修复
+
+- 修复系统关机时「设备关机」上报不生效的问题，共三处原因：
+  - 之前只监听 `WM_QUERYENDSESSION`，`WM_ENDSESSION` 单独到达时收不到；现在两种消息都处理。
+  - 关机事件原先只依赖窗口消息过滤，窗口收进托盘后可能漏收；现在同时接入 Qt 的 `commitDataRequest` 信号（系统关机时由 Qt 触发），两路事件去重只上报一次。
+  - 关机上报原本走后台线程并只 `join` 2 秒，关机流程杀进程时请求会被中断；改为同步直发（连接 1.0s / 读取 1.5s），并先把 `pending_shutdown.json` 写入用户目录，发送失败时下次启动自动补发，且补发完成后再上报「程序启动」。
+- 关机前清空常规上报队列，避免旧的应用状态抢在「设备关机」之后上报。
+- 调用 `SetProcessShutdownParameters` 提升关机通知优先级（0x3FF），让系统更早通知本进程。
+- 修复 `app/__init__.py` 中重复的 UTF-8 BOM 导致 `pytest` 收集报错（`invalid non-printable character U+FEFF`）。
+
+### 新增
+
+- 补充测试：`tests/test_power_events.py`（关机消息分发），`tests/test_reporter.py`（关机上报与补发落盘）。
+
+### 变更
+
+- 版本号升级至 1.1.10。
+
 ## [1.1.9] - 2026-10-26
 
 ### 新增

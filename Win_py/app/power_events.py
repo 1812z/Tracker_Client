@@ -11,11 +11,14 @@ from PyQt5.QtCore import QAbstractNativeEventFilter
 logger = logging.getLogger(__name__)
 
 WM_QUERYENDSESSION = 0x0011
+WM_ENDSESSION = 0x0016
 WM_POWERBROADCAST = 0x0218
 PBT_APMSUSPEND = 0x0004
 PBT_APMRESUMEAUTOMATIC = 0x0012
 PBT_POWERSETTINGCHANGE = 0x8013
 DEVICE_NOTIFY_WINDOW_HANDLE = 0
+SHUTDOWN_PRIORITY = 0x03FF  # 0x300-0x3FF 是应用可用的最早关机区间，默认 0x280
+SHUTDOWN_NORETRY = 0x00000001
 
 
 class GUID(ctypes.Structure):
@@ -97,6 +100,7 @@ class PowerEvents(QAbstractNativeEventFilter):
 
     def register(self, hwnd: int) -> bool:
         self._hwnd = hwnd
+        self._raise_shutdown_priority()
         try:
             user32 = ctypes.windll.user32
             user32.RegisterPowerSettingNotification.argtypes = [
@@ -133,13 +137,26 @@ class PowerEvents(QAbstractNativeEventFilter):
         finally:
             self._notify_handle = None
 
+    def _raise_shutdown_priority(self) -> None:
+        """提高本进程的关机通知优先级，让系统尽早通知我们，留出上报时间。"""
+        try:
+            kernel32 = ctypes.windll.kernel32
+            kernel32.SetProcessShutdownParameters.argtypes = [wintypes.DWORD, wintypes.DWORD]
+            kernel32.SetProcessShutdownParameters.restype = wintypes.BOOL
+            if not kernel32.SetProcessShutdownParameters(
+                SHUTDOWN_PRIORITY, SHUTDOWN_NORETRY
+            ):
+                logger.debug("设置关机通知优先级失败")
+        except Exception as exc:
+            logger.debug("设置关机通知优先级异常: %s", exc)
+
     def nativeEventFilter(self, eventType, message):
         if eventType not in (b"windows_generic_MSG", b"windows_dispatcher_MSG"):
             return False, 0
 
         try:
             msg = wintypes.MSG.from_address(int(message))
-            if msg.message == WM_QUERYENDSESSION:
+            if msg.message in (WM_QUERYENDSESSION, WM_ENDSESSION):
                 self._fire_session_end()
             elif msg.message == WM_POWERBROADCAST:
                 if msg.wParam == PBT_APMSUSPEND:

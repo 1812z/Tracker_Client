@@ -66,3 +66,60 @@ def test_disabled_or_unconfigured_skips_submit():
     reporter = Reporter(FakeConfig(configured=False), FakeClient())
     reporter.submit("A", True)
     assert reporter._pending is None
+
+
+class FailingClient:
+    def __init__(self):
+        self.calls = []
+
+    def post_report(self, payload, max_retries=3, timeout=None):
+        self.calls.append(payload)
+        return False, "网络请求失败"
+
+
+def test_shutdown_report_success_clears_marker(tmp_path, monkeypatch):
+    marker = tmp_path / "pending_shutdown.json"
+    monkeypatch.setattr("app.reporter.pending_shutdown_path", lambda: marker)
+
+    client = FakeClient()
+    reporter = Reporter(FakeConfig(), client, battery_provider=lambda: (None, None))
+
+    assert reporter.send_shutdown_report() is True
+    assert client.calls[-1]["app_name"] == "设备关机"
+    assert client.calls[-1]["running"] is False
+    assert not marker.exists()
+
+
+def test_shutdown_report_failure_keeps_marker(tmp_path, monkeypatch):
+    marker = tmp_path / "pending_shutdown.json"
+    monkeypatch.setattr("app.reporter.pending_shutdown_path", lambda: marker)
+
+    reporter = Reporter(FakeConfig(), FailingClient(), battery_provider=lambda: (None, None))
+
+    assert reporter.send_shutdown_report() is False
+    assert marker.exists()
+
+
+def test_flush_pending_shutdown_reports_and_clears(tmp_path, monkeypatch):
+    marker = tmp_path / "pending_shutdown.json"
+    monkeypatch.setattr("app.reporter.pending_shutdown_path", lambda: marker)
+    marker.write_text('{"app_name": "设备关机", "at": 1}', encoding="utf-8")
+
+    client = FakeClient()
+    reporter = Reporter(FakeConfig(), client, battery_provider=lambda: (None, None))
+
+    assert reporter.flush_pending_shutdown() is True
+    assert client.calls[-1]["app_name"] == "设备关机"
+    assert not marker.exists()
+
+
+def test_flush_pending_shutdown_without_marker_is_noop(tmp_path, monkeypatch):
+    marker = tmp_path / "pending_shutdown.json"
+    monkeypatch.setattr("app.reporter.pending_shutdown_path", lambda: marker)
+
+    client = FakeClient()
+    reporter = Reporter(FakeConfig(), client, battery_provider=lambda: (None, None))
+
+    assert reporter.flush_pending_shutdown() is False
+    assert client.calls == []
+

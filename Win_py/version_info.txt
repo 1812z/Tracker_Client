@@ -1,7 +1,7 @@
-﻿VSVersionInfo(
+VSVersionInfo(
   ffi=FixedFileInfo(
-    filevers=(1, 1, 9, 0),
-    prodvers=(1, 1, 9, 0),
+    filevers=(1, 1, 10, 0),
+    prodvers=(1, 1, 10, 0),
     mask=0x3f,
     flags=0x0,
     OS=0x40004,
@@ -16,12 +16,12 @@
         [
           StringStruct('CompanyName', 'CSSQY'),
           StringStruct('FileDescription', '运行时间跟踪器'),
-          StringStruct('FileVersion', '1.1.9'),
+          StringStruct('FileVersion', '1.1.10'),
           StringStruct('InternalName', 'RunTimeTracker'),
           StringStruct('LegalCopyright', 'MIT License'),
           StringStruct('OriginalFilename', 'RunTimeTracker.exe'),
           StringStruct('ProductName', '运行时间跟踪器'),
-          StringStruct('ProductVersion', '1.1.9')
+          StringStruct('ProductVersion', '1.1.10')
         ]
       )
     ]),

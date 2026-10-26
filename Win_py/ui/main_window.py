@@ -1,6 +1,7 @@
 """主窗口：页面装配、托盘、监控与系统事件。"""
 
 import logging
+import threading
 
 from PyQt5.QtCore import QTimer
 from PyQt5.QtGui import QIcon
@@ -57,6 +58,7 @@ class MainWindow(FluentWindow):
         self._state = SystemState()
         self._start_minimized = start_minimized
         self._quitting = False
+        self._session_end_reported = False
         self._monitor_thread = None
         self._power = None
 
@@ -178,8 +180,15 @@ class MainWindow(FluentWindow):
         app = QApplication.instance()
         if app is not None:
             app.installNativeEventFilter(self._power)
+            # Qt 在系统关机时会先发 commitDataRequest，比窗口消息更可靠
+            app.commitDataRequest.connect(self._on_session_end)
 
     def _report_startup(self) -> None:
+        threading.Thread(target=self._flush_then_report_startup, daemon=True).start()
+
+    def _flush_then_report_startup(self) -> None:
+        # 上次关机若没送达，先补发「设备关机」，再上报「程序启动」
+        self._reporter.flush_pending_shutdown()
         self._reporter.send_critical("程序启动", True, timeout=0.0)
 
     def _on_suspend(self) -> None:
@@ -196,8 +205,17 @@ class MainWindow(FluentWindow):
     def _on_display_on(self) -> None:
         self._state.set_screen_off(False)
 
-    def _on_session_end(self) -> None:
-        self._reporter.send_critical("设备关机", False, timeout=2.0)
+    def _on_session_end(self, *_args) -> None:
+        """系统关机：停掉常规上报，同步补发一次「设备关机」。"""
+        if self._session_end_reported:
+            return
+        self._session_end_reported = True
+
+        logger.info("检测到系统关机，开始上报关机状态")
+        monitor = self._monitor_thread
+        if monitor is not None:
+            monitor.stop(0)
+        self._reporter.send_shutdown_report()
 
     def _apply_theme(self) -> None:
         self.stats_page.apply_theme()

@@ -10,6 +10,7 @@ logger = logging.getLogger(__name__)
 
 LEGACY_CONFIG_NAME = "config.json"
 LEGACY_APPS_NAME = "apps.json"
+PENDING_SHUTDOWN_NAME = "pending_shutdown.json"
 
 
 def is_frozen() -> bool:
@@ -49,6 +50,11 @@ def apps_path() -> Path:
 
 def logs_dir() -> Path:
     return user_data_dir() / "logs"
+
+
+def pending_shutdown_path() -> Path:
+    """关机上报的落盘标记：发送失败时保留，下次启动补发。"""
+    return user_data_dir() / PENDING_SHUTDOWN_NAME
 
 
 def ensure_user_dirs() -> None:
